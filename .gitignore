@@ -1,3 +1,5 @@
 .idea/*
-main.py
 .venv/*
+bike_sharing_dataset/*
+.tmp_dagster_home_*
+main.py
