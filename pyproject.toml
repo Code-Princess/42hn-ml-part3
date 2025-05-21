@@ -13,3 +13,7 @@ dependencies = [
     "scikit-learn>=1.6.1",
     "seaborn>=0.13.2",
 ]
+
+[tool.dagster]
+module_name = "definitions"
+code_location_name = "ml_pipeline"

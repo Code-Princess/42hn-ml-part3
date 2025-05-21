@@ -2,7 +2,13 @@ import pandas as pd
 from dagster import asset
 
 @asset
-def load_data() -> pd.DataFrame:
-    file_path = '../../bike_sharing_dataset/hour.csv'
+def bikes_data() -> pd.DataFrame:
+    """
+    
+    Returns: data
+
+    """
+    file_path = 'bike_sharing_dataset/hour.csv'
     data = pd.read_csv(file_path)
+    print(data.head())
     return data
