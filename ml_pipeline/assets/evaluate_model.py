@@ -1,10 +1,9 @@
-import numpy as np
 from dagster import asset
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from ml_pipeline.utils.eval_metrics import compute_eval_metrics
 
 @asset
-def eval_metrics(lin_reg_model: LinearRegression, train_and_test_data: tuple) -> dict:
+def eval_lin_reg(lin_reg_model: LinearRegression, test_data: tuple) -> dict:
     """
     
     Args:
@@ -14,11 +13,23 @@ def eval_metrics(lin_reg_model: LinearRegression, train_and_test_data: tuple) ->
     Returns: {'rmse': rmse, 'mae': mae, 'r2': r2}
 
     """
-    X_train, X_test, y_train, y_test = train_and_test_data
-    y_preds = lin_reg_model.predict(X_test)
-    rmse = np.sqrt(mean_squared_error(y_test, y_preds))
-    mae = mean_absolute_error(y_test, y_preds)
-    r2 = r2_score(y_test, y_preds)
-    eval_metrics = {'rmse': rmse, 'mae': mae, 'r2': r2}
-    print(eval_metrics)
-    return eval_metrics
+    _, X_test, _, y_test = test_data
+    return compute_eval_metrics(lin_reg_model, test_data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
