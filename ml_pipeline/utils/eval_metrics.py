@@ -1,8 +1,7 @@
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
-def compute_eval_metrics(model, test_data: tuple) -> dict:
-    _, X_test, _, y_test = test_data
+def compute_eval_metrics(model, X_test, y_test) -> dict:
     y_preds = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, y_preds))
     mae = mean_absolute_error(y_test, y_preds)
