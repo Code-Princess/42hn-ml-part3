@@ -5,7 +5,7 @@ from dagster import asset
 def bikes_data() -> pd.DataFrame:
     """
     
-    Returns: data
+    Returns: raw data
 
     """
     file_path = 'bike_sharing_dataset/hour.csv'

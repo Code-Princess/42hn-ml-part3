@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 
 @asset
-def pre_data(bikes_data: pd.DataFrame) -> pd.DataFrame:
+def bikes_features(bikes_data: pd.DataFrame) -> pd.DataFrame:
     """
 
     Args:
