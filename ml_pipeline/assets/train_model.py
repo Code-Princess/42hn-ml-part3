@@ -3,6 +3,8 @@ from dagster import asset
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split, GridSearchCV
+from xgboost import XGBRegressor
+
 
 @asset
 def train_data(bikes_features: pd.DataFrame) -> tuple:
@@ -71,4 +73,27 @@ def rand_forest_model(train_data: tuple) -> RandomForestRegressor:
     grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=3)
     grid_search.fit(X_train, y_train)
     print("Random Forest Model Trained")
+    return grid_search.best_estimator_
+
+@asset
+def XGBoost_model(train_data: tuple) -> XGBRegressor:
+    """
+    
+    Args:
+        train_data: 
+
+    Returns: XGBoost model
+
+    """
+    X_train, _, y_train, _ = train_data
+    model = XGBRegressor(random_state=42)
+    # XGBoost with GridSearch
+    param_grid = {
+        'n_estimators': [100, 200],
+        'learning_rate': [0.05, 0.1],
+        'max_depth': [3, 5]
+    }
+    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=3)
+    grid_search.fit(X_train, y_train)
+    print("XGBoost Model Trained")
     return grid_search.best_estimator_
