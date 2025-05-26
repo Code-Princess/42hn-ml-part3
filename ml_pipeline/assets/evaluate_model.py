@@ -9,12 +9,12 @@ from ml_pipeline.utils.eval_metrics import compute_eval_metrics
 @asset
 def eval_lin_reg(lin_reg_model: LinearRegression, test_data: tuple) -> dict:
     """
-
+    
     Args:
-        lin_reg_model:
-        test_data:
+        lin_reg_model: 
+        test_data: 
 
-    Returns: eval_metrics
+    Returns: metrics
 
     """
     X_test, y_test = test_data
@@ -23,12 +23,12 @@ def eval_lin_reg(lin_reg_model: LinearRegression, test_data: tuple) -> dict:
 @asset
 def eval_rand_forest(rand_forest_model: RandomForestRegressor, test_data: tuple) -> dict:
     """
-    
-    Args:
-        rand_forest_model: 
-        test_data: 
 
-    Returns: eval_metrics
+    Args:
+        rand_forest_model:
+        test_data:
+
+    Returns: metrics
 
     """
     X_test, y_test = test_data
@@ -42,7 +42,7 @@ def eval_XGBoost(XGBoost_model: XGBRegressor, test_data: tuple) -> dict:
         XGBoost_model: 
         test_data: 
 
-    Returns: eval_metrics
+    Returns: metrics
 
     """
     X_test, y_test = test_data
