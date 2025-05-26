@@ -1,70 +1,55 @@
 import pandas as pd
-from dagster import asset
+from dagster import asset, AssetOut, multi_asset, Output
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split, GridSearchCV
 from xgboost import XGBRegressor
 
-
-@asset
-def train_data(bikes_features: pd.DataFrame) -> tuple:
-    """
-
-    Args:
-        bikes_features:
-
-    Returns: train data
-
-    """
+@multi_asset(
+    outs={"X_train": AssetOut(),
+          "X_test": AssetOut(),
+          "y_train": AssetOut(),
+          "y_test": AssetOut()
+          }
+)
+def split_data(bikes_features: pd.DataFrame):
     X = bikes_features.drop(columns=['cnt'])
     y = bikes_features['cnt']
-    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(X_train.shape)
-    return  X_train, _, y_train, _
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    print("X_train shape:", X_train.shape)
+    print("X_test shape:", X_test.shape)
+    yield Output(X_train, output_name="X_train")
+    yield Output(X_test, output_name="X_test")
+    yield Output(y_train, output_name="y_train")
+    yield Output(y_test, output_name="y_test")
 
 @asset
-def test_data(bikes_features: pd.DataFrame) -> tuple:
-    """
-
-    Args:
-        bikes_features:
-
-    Returns: test data
-
-    """
-    X = bikes_features.drop(columns=['cnt'])
-    y = bikes_features['cnt']
-    _, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(X_test.shape)
-    return  _, X_test, _, y_test
-
-@asset
-def lin_reg_model(train_data: tuple) -> LinearRegression:
+def lin_reg_model(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
     """
     
     Args:
-        split_data: 
+        X_train: 
+        y_train: 
 
     Returns: linear regression model
 
     """
-    X_train, _, y_train, _ = train_data
     model = LinearRegression()
     model.fit(X_train, y_train)
     print("Linear Regression Model Trained")
     return model
 
 @asset
-def rand_forest_model(train_data: tuple) -> RandomForestRegressor:
+def rand_forest_model(X_train: pd.DataFrame, y_train: pd.Series) -> RandomForestRegressor:
     """
-
+    
     Args:
-        train_data: 
+        X_train: 
+        y_train: 
 
-    Returns: random forest model
+    Returns: random forest regression model
 
     """
-    X_train, _, y_train, _ = train_data
     model = RandomForestRegressor(random_state=42)
     param_grid = {
         'n_estimators': [100, 200],
@@ -76,16 +61,16 @@ def rand_forest_model(train_data: tuple) -> RandomForestRegressor:
     return grid_search.best_estimator_
 
 @asset
-def XGBoost_model(train_data: tuple) -> XGBRegressor:
+def XGBoost_model(X_train: pd.DataFrame, y_train: pd.Series) -> XGBRegressor:
     """
     
     Args:
-        train_data: 
+        X_train: 
+        y_train: 
 
-    Returns: XGBoost model
-
+    Returns: XGBoost regression model 
+        
     """
-    X_train, _, y_train, _ = train_data
     model = XGBRegressor(random_state=42)
     # XGBoost with GridSearch
     param_grid = {
