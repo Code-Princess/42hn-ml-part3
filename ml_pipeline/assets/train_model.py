@@ -14,15 +14,22 @@ def split_data(bikes_features: pd.DataFrame):
     X = bikes_features.drop(columns=['cnt'])
     y = bikes_features['cnt']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    train_data = (X_train, y_train)
-    test_data = (X_test, y_test)
+    # train_data = (X_train, y_train)
+    # test_data = (X_test, y_test)
+
+    # Combine features and target into one DataFrame for train and test
+    train_data = X_train.copy()
+    train_data['cnt'] = y_train
+
+    test_data = X_test.copy()
+    test_data['cnt'] = y_test
     print("X_train shape:", X_train.shape)
     print("X_test shape:", X_test.shape)
     yield Output(train_data, output_name="train_data")
     yield Output(test_data, output_name="test_data")
 
-@asset(required_resource_keys={"mlflow_resrc"})
-def lin_reg_model(context: OpExecutionContext, train_data: tuple) -> LinearRegression:
+@asset(io_manager_key="pickle_io_manager", required_resource_keys={"mlflow_resrc"})
+def lin_reg_model(context: OpExecutionContext, train_data: pd.DataFrame) -> LinearRegression:
     """
 
     Args:
@@ -33,7 +40,9 @@ def lin_reg_model(context: OpExecutionContext, train_data: tuple) -> LinearRegre
 
     """
     mlflow = context.resources.mlflow_resrc
-    X_train, y_train = train_data
+    # Separate features and target from the combined DataFrame
+    X_train = train_data.drop(columns=['cnt'])
+    y_train = train_data['cnt']
     with mlflow.start_run(run_name="Linear Regression Training"):
         model = LinearRegression()
         model.fit(X_train, y_train)
@@ -41,8 +50,8 @@ def lin_reg_model(context: OpExecutionContext, train_data: tuple) -> LinearRegre
         context.log.info("Linear Regression Model Trained")
     return model
 
-@asset(required_resource_keys={"mlflow_resrc"})
-def rand_forest_model(context: OpExecutionContext, train_data: tuple) -> RandomForestRegressor:
+@asset(io_manager_key="pickle_io_manager", required_resource_keys={"mlflow_resrc"})
+def rand_forest_model(context: OpExecutionContext, train_data: pd.DataFrame) -> RandomForestRegressor:
     """
 
     Args:
@@ -53,7 +62,9 @@ def rand_forest_model(context: OpExecutionContext, train_data: tuple) -> RandomF
 
     """
     mlflow = context.resources.mlflow_resrc
-    X_train, y_train = train_data
+    # Separate features and target from the combined DataFrame
+    X_train = train_data.drop(columns=['cnt'])
+    y_train = train_data['cnt']
     with mlflow.start_run(run_name="Random Forest Regression Training"):
         model = RandomForestRegressor(random_state=42)
         param_grid = {
@@ -66,8 +77,8 @@ def rand_forest_model(context: OpExecutionContext, train_data: tuple) -> RandomF
         context.log.info("Random Forest Model Trained")
     return grid_search.best_estimator_
 
-@asset(required_resource_keys={"mlflow_resrc"})
-def XGBoost_model(context: OpExecutionContext, train_data: tuple) -> XGBRegressor:
+@asset(io_manager_key="pickle_io_manager", required_resource_keys={"mlflow_resrc"})
+def XGBoost_model(context: OpExecutionContext, train_data: pd.DataFrame) -> XGBRegressor:
     """
     
     Args:
@@ -78,7 +89,9 @@ def XGBoost_model(context: OpExecutionContext, train_data: tuple) -> XGBRegresso
 
     """
     mlflow = context.resources.mlflow_resrc
-    X_train, y_train = train_data
+    # Separate features and target from the combined DataFrame
+    X_train = train_data.drop(columns=['cnt'])
+    y_train = train_data['cnt']
     with mlflow.start_run(run_name="XGBoost Regression Training"):
         model = XGBRegressor(random_state=42)
         # XGBoost with GridSearch

@@ -3,3 +3,4 @@
 bike_sharing_dataset/*
 .tmp_dagster_home_*
 main.py
+storage/*
