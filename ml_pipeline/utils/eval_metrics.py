@@ -6,6 +6,6 @@ def compute_eval_metrics(model, X_test, y_test) -> dict:
     rmse = np.sqrt(mean_squared_error(y_test, y_preds))
     mae = mean_absolute_error(y_test, y_preds)
     r2 = r2_score(y_test, y_preds)
-    eval_metrics = {'rmse': rmse, 'mae': mae, 'r2': r2}
+    eval_metrics = {'rmse': float(rmse), 'mae': float(mae), 'r2': float(r2)}
     print(eval_metrics)
     return eval_metrics

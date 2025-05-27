@@ -7,26 +7,23 @@ class PickleIOManager(IOManager):
         self.base_path = base_path
 
     def handle_output(self, context: OutputContext, obj):
-        # Compose file path based on step key and output name
-        file_name = f"{context.step_key}_{context.name}.pkl"
+        file_name = f"{'_'.join(context.asset_key.path)}.pkl"
         output_path = os.path.join(self.base_path, file_name)
 
-        # Ensure directory exists
         os.makedirs(self.base_path, exist_ok=True)
 
         with open(output_path, "wb") as f:
             pickle.dump(obj, f)
 
-        # Store file path in metadata for downstream
-        context.add_output_metadata({"path": output_path})
+        context.log.info(f"Stored Pickle output to {output_path}")
 
     def load_input(self, context: InputContext):
-        # Get the path from upstream metadata
-        upstream_metadata = context.upstream_output.metadata
-        input_path = upstream_metadata["path"]
+        file_name = f"{'_'.join(context.asset_key.path)}.pkl"
+        input_path = os.path.join(self.base_path, file_name)
 
         with open(input_path, "rb") as f:
             return pickle.load(f)
+
 
 @io_manager(config_schema={"base_path": str})
 def pickle_io_manager(init_context):

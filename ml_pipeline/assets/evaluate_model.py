@@ -6,8 +6,8 @@ from xgboost import XGBRegressor
 
 from ml_pipeline.utils.eval_metrics import compute_eval_metrics
 
-@asset
-def eval_lin_reg(lin_reg_model: LinearRegression, test_data: tuple) -> dict:
+@asset(io_manager_key="json_io_manager")
+def eval_lin_reg(lin_reg_model: LinearRegression, test_data: pd.DataFrame) -> dict:
     """
     
     Args:
@@ -17,11 +17,13 @@ def eval_lin_reg(lin_reg_model: LinearRegression, test_data: tuple) -> dict:
     Returns: metrics
 
     """
-    X_test, y_test = test_data
+    # Separate features and target from the combined DataFrame
+    X_test = test_data.drop(columns=['cnt'])
+    y_test = test_data['cnt']
     return compute_eval_metrics(lin_reg_model, X_test, y_test)
 
-@asset
-def eval_rand_forest(rand_forest_model: RandomForestRegressor, test_data: tuple) -> dict:
+@asset(io_manager_key="json_io_manager")
+def eval_rand_forest(rand_forest_model: RandomForestRegressor, test_data: pd.DataFrame) -> dict:
     """
 
     Args:
@@ -31,11 +33,13 @@ def eval_rand_forest(rand_forest_model: RandomForestRegressor, test_data: tuple)
     Returns: metrics
 
     """
-    X_test, y_test = test_data
+    # Separate features and target from the combined DataFrame
+    X_test = test_data.drop(columns=['cnt'])
+    y_test = test_data['cnt']
     return compute_eval_metrics(rand_forest_model, X_test, y_test)
 
-@asset
-def eval_XGBoost(XGBoost_model: XGBRegressor, test_data: tuple) -> dict:
+@asset(io_manager_key="json_io_manager")
+def eval_XGBoost(XGBoost_model: XGBRegressor, test_data: pd.DataFrame) -> dict:
     """
     
     Args:
@@ -45,7 +49,9 @@ def eval_XGBoost(XGBoost_model: XGBRegressor, test_data: tuple) -> dict:
     Returns: metrics
 
     """
-    X_test, y_test = test_data
+    # Separate features and target from the combined DataFrame
+    X_test = test_data.drop(columns=['cnt'])
+    y_test = test_data['cnt']
     return compute_eval_metrics(XGBoost_model, X_test, y_test)
 
 
