@@ -1,11 +1,11 @@
 import pandas as pd
-from dagster import asset
+from dagster import asset, OpExecutionContext
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 
 @asset
-def bikes_features(bikes_data: pd.DataFrame) -> pd.DataFrame:
+def bikes_features(context: OpExecutionContext, bikes_data: pd.DataFrame) -> pd.DataFrame:
     """
 
     Args:
@@ -29,5 +29,5 @@ def bikes_features(bikes_data: pd.DataFrame) -> pd.DataFrame:
 
     df_features = pd.DataFrame(X_preprocessed, columns=all_columns, index=bikes_data.index)
     df_features['cnt'] = target.values
-    print(df_features.head())
+    context.log.info(df_features.head())
     return df_features

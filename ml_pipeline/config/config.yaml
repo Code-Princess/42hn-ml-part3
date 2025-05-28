@@ -1,0 +1,20 @@
+ops:
+  bikes_data:
+    config:
+      file_path: "bike_sharing_dataset/hour.csv"
+
+resources:
+  io_manager:
+    config:
+      base_path: storage/data
+  pickle_io_manager:
+    config:
+      base_path: storage/model_pickles
+  json_io_manager:
+    config:
+      base_path: storage/evals
+  mlflow_resrc:
+    config:
+      tracking_uri: http://localhost:5000
+      experiment_name: BikeSharing
+      
